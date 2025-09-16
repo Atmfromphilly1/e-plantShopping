@@ -7,62 +7,56 @@ const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // Calculate total amount for all products in the cart
-    const calculateTotalCost = (section) => {
-        let totalCost = 0;
-        if (section === "cart") {
-            CartItem.forEach((item) => {
-                totalCost += item.cost * item.quantity;
-
-            });
-        }
-        return totalCost;
-    };
-    const cartTotalCost = calculateTotalCost("cart");
- 
+  // Helper to extract the numeric value from a cost string
+  const getNumericCost = (costString) => {
+    return parseFloat(costString.substring(1));
   };
-
-  const handleCheckoutShopping = (e) => {
+  
+  // Calculate overall total amount for all products in the cart
+  const calculateTotalAmount = () => {
+    return cart.reduce((total, item) => {
+      const unitPrice = getNumericCost(item.cost);
+      return total + (item.quantity * unitPrice);
+    }, 0).toFixed(2);
+  };
+    
+  const handleContinueShopping = (e) => {
+    if (onContinueShopping) {
+      onContinueShopping(e);
+    }
+  };
+    
+  const handleCheckoutShopping = () => {
     alert('Functionality to be added for future reference');
   };
 
-
-
   const handleIncrement = (item) => {
     dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
-
   };
 
   const handleDecrement = (item) => {
-    if(item.quantity > 1) 
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
-    else if (item.quantity === "0")
-    dispatch(removeItem({ name: item.name, quantity: item.quantity - 1 }));
-   
+    if (item.quantity > 1) {
+      dispatch(updateQuantity({ name: item.name, amount: item.quantity - 1 }));
+    } else {
+      dispatch(removeItem(item.name));
+    }
   };
-
-
-
-  
 
   const handleRemove = (item) => {
-    dispatch(removeItem({ name: item.name, quantity: item.quantity - 1 }));
+    dispatch(removeItem(item.name));
   };
+  
+  // Calculate total cost for a single item (subtotal)
+  const calculateTotalCost = (item) => {
+     // Extract the cost string (e.g., "$15") and remove the "$"
+  const unitPriceString = parseFloat(item.cost.substring(1));
 
-  // Calculate total cost based on quantity for an item
-  const calculateTotalCost = (section) => {
-    let totalCost = 0;
-    if (section === "venue") {
-      venueItems.forEach((item) => {
-        totalCost += item.cost * item.quantity;
-      });
-    } else if (section === "av") {
-      avItems.forEach((item) => {
-        totalCost += item.cost * item.quantity;
-      });
-    }
-    return totalCost;
-  };
+  // Convert the string to a floating-point number
+  const unitPrice = parseFloat(unitPriceString);
+
+  // Multiply the unit price by the item's quantity and format to two decimal places
+  return (unitPrice * item.quantity).toFixed(2);
+};
 
   return (
     <div className="cart-container">
@@ -89,11 +83,13 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={handleCheckoutShopping}>Checkout</button>
       </div>
     </div>
   );
+};
 
 export default CartItem;
+
 
 

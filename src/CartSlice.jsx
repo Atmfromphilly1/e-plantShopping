@@ -6,7 +6,6 @@ export const CartSlice = createSlice({
     items: [], // Initialize items as an empty array
   },
   reducers: {
-    addItem: (state, action) => {
         addItem: (state, action) => {
             const { name, image, cost } = action.payload; // Destructure product details from the action payload
             // Check if the item already exists in the cart by comparing names
@@ -35,7 +34,7 @@ if (itemToUpdate) {
     
     },
   },
-});
+);
 
 export const { addItem, removeItem, updateQuantity } = CartSlice.actions;
 
